@@ -1,9 +1,9 @@
 {
-    "name": "Bookmarks",
-    "displayName": "Bookmarks",
-    "description": "Mark lines and jump to them",
+    "name": "bookmarks-custom",
+    "displayName": "Bookmarks - Custom",
+    "description": "Custom implmentation of the popular Bookmarks extension.",
     "version": "14.0.0",
-    "publisher": "alefragnani",
+    "publisher": "nicholascorbin",
     "engines": {
         "vscode": "^1.78.0"
     },
@@ -61,10 +61,17 @@
             "bookmarks": [
                 {
                     "id": "bookmarksExplorer",
+                    "icon": "$(bookmark)",
                     "name": "%bookmarks.views.Explorer.name%"
                 },
                 {
+                    "id": "bookmarksGlobalExplorer",
+                    "icon": "$(globe)",
+                    "name": "%bookmarks.views.GlobalExplorer.name%"
+                },
+                {
                     "id": "bookmarksHelpAndFeedback",
+                    "icon": "$(bookmark)",
                     "name": "%bookmarks.views.HelpAndFeedback.name%",
                     "visibility": "collapsed"
                 }
@@ -250,6 +257,52 @@
                 "command": "bookmarks.export",
                 "title": "%bookmarks.commands.export.title%",
                 "category": "%bookmarks.commands.category.bookmarks%"
+            },
+            {
+                "command": "bookmarks.toggleGlobal",
+                "title": "%bookmarks.commands.toggleGlobal.title%",
+                "category": "%bookmarks.commands.category.bookmarks.global%"
+            },
+            {
+                "command": "bookmarks.toggleGlobalLabeled",
+                "title": "%bookmarks.commands.toggleGlobalLabeled.title%",
+                "category": "%bookmarks.commands.category.bookmarks.global%"
+            },
+            {
+                "command": "bookmarks.listGlobals",
+                "title": "%bookmarks.commands.listGlobals.title%",
+                "category": "%bookmarks.commands.category.bookmarks.global%"
+            },
+            {
+                "command": "bookmarks.clearAllGlobals",
+                "title": "%bookmarks.commands.clearAllGlobals.title%",
+                "category": "%bookmarks.commands.category.bookmarks.global%",
+                "icon": "$(clear-all)"
+            },
+            {
+                "command": "_bookmarks.deleteGlobalBookmark",
+                "title": "%bookmarks.commands.deleteGlobalBookmark.title%",
+                "icon": "$(close)"
+            },
+            {
+                "command": "_bookmarks.editGlobalLabel",
+                "title": "%bookmarks.commands.editGlobalLabel.title%",
+                "icon": "$(edit)"
+            },
+            {
+                "command": "_bookmarks.clearGlobalFromFile",
+                "title": "%bookmarks.commands.clearGlobalFromFile.title%",
+                "icon": "$(clear-all)"
+            },
+            {
+                "command": "_bookmarks.jumpToGlobal",
+                "title": "%bookmarks.commands.jumpToGlobal.title%",
+                "category": "%bookmarks.commands.category.bookmarks.global%"
+            },
+            {
+                "command": "_bookmarks.refreshGlobal",
+                "title": "%bookmarks.commands.refreshGlobal.title%",
+                "icon": "$(refresh)"
             }
         ],
         "menus": {
@@ -328,6 +381,26 @@
                 },
                 {
                     "command": "_bookmarks.openSideBar",
+                    "when": "false"
+                },
+                {
+                    "command": "_bookmarks.jumpToGlobal",
+                    "when": "false"
+                },
+                {
+                    "command": "_bookmarks.deleteGlobalBookmark",
+                    "when": "false"
+                },
+                {
+                    "command": "_bookmarks.editGlobalLabel",
+                    "when": "false"
+                },
+                {
+                    "command": "_bookmarks.clearGlobalFromFile",
+                    "when": "false"
+                },
+                {
+                    "command": "_bookmarks.refreshGlobal",
                     "when": "false"
                 }
             ],
@@ -410,6 +483,16 @@
                     "command": "bookmarks.openSettings",
                     "when": "view == bookmarksExplorer",
                     "group": "3_bookmarks"
+                },
+                {
+                    "command": "_bookmarks.refreshGlobal",
+                    "when": "view == bookmarksGlobalExplorer",
+                    "group": "navigation@5"
+                },
+                {
+                    "command": "bookmarks.clearAllGlobals",
+                    "when": "view == bookmarksGlobalExplorer",
+                    "group": "navigation@10"
                 }
             ],
             "view/item/context": [
@@ -441,6 +524,35 @@
                     "command": "_bookmarks.editLabel",
                     "when": "view == bookmarksExplorer && viewItem == BookmarkNodeBookmark",
                     "group": "inline@1"
+                },
+                {
+                    "command": "_bookmarks.clearGlobalFromFile",
+                    "when": "view == bookmarksGlobalExplorer && viewItem == GlobalBookmarkNodeFile"
+                },
+                {
+                    "command": "_bookmarks.clearGlobalFromFile",
+                    "when": "view == bookmarksGlobalExplorer && viewItem == GlobalBookmarkNodeFile",
+                    "group": "inline"
+                },
+                {
+                    "command": "_bookmarks.deleteGlobalBookmark",
+                    "when": "view == bookmarksGlobalExplorer && viewItem == GlobalBookmarkNodeBookmark",
+                    "group": "bookmark@2"
+                },
+                {
+                    "command": "_bookmarks.deleteGlobalBookmark",
+                    "when": "view == bookmarksGlobalExplorer && viewItem == GlobalBookmarkNodeBookmark",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "_bookmarks.editGlobalLabel",
+                    "when": "view == bookmarksGlobalExplorer && viewItem == GlobalBookmarkNodeBookmark",
+                    "group": "bookmark@1"
+                },
+                {
+                    "command": "_bookmarks.editGlobalLabel",
+                    "when": "view == bookmarksGlobalExplorer && viewItem == GlobalBookmarkNodeBookmark",
+                    "group": "inline@1"
                 }
             ],
             "extension/context": [
@@ -469,6 +581,16 @@
                 {
                     "command": "bookmarks.jumpToPrevious",
                     "group": "bookmarks@1",
+                    "when": "editorTextFocus && config.bookmarks.showCommandsInContextMenu"
+                },
+                {
+                    "command": "bookmarks.toggleGlobal",
+                    "group": "bookmarks@2",
+                    "when": "editorTextFocus && config.bookmarks.showCommandsInContextMenu"
+                },
+                {
+                    "command": "bookmarks.toggleGlobalLabeled",
+                    "group": "bookmarks@2",
                     "when": "editorTextFocus && config.bookmarks.showCommandsInContextMenu"
                 }
             ],
@@ -509,6 +631,10 @@
             {
                 "id": "bookmarks.sideBar.title",
                 "label": "View & Sort"
+            },
+            {
+                "id": "bookmarks.sideBar.title2",
+                "label": "View Globals"
             }
         ],
         "configuration": {
@@ -534,11 +660,25 @@
                     "description": "%bookmarks.configuration.gutterIconFillColor.description%",
                     "scope": "application"
                 },
+                "bookmarks.gutterGlobalIconFillColor": {
+                    "type": "string",
+                    "format": "color",
+                    "default": "#fb1515",
+                    "description": "%bookmarks.configuration.gutterGlobalIconFillColor.description%",
+                    "scope": "application"
+                },
                 "bookmarks.gutterIconBorderColor": {
                     "type": "string",
                     "format": "color",
                     "default": "#157EFB",
                     "description": "%bookmarks.configuration.gutterIconBorderColor.description%",
+                    "scope": "application"
+                },
+                "bookmarks.gutterGlobalIconBorderColor": {
+                    "type": "string",
+                    "format": "color",
+                    "default": "#be15fb",
+                    "description": "%bookmarks.configuration.gutterGlobalIconBorderColor.description%",
                     "scope": "application"
                 },
                 "bookmarks.backgroundLineColor": {
@@ -730,6 +870,12 @@
                 "key": "shift+alt+j",
                 "mac": "shift+alt+j",
                 "when": "editorTextFocus"
+            },
+            {
+                "command": "bookmarks.toggleGlobal",
+                "key": "ctrl+alt+g",
+                "mac": "cmd+alt+g",
+                "when": "editorTextFocus"
             }
         ],
         "colors": [
@@ -824,7 +970,7 @@
             "vscode-ext"
         ],
         "rules": {
-            "indent": ["error", 4, { "SwitchCase": 1 }],
+            "indent": "off",
             "no-tabs": "error",
             "semi": ["error", "always"],
             "no-unexpected-multiline": "error"

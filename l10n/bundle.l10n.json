@@ -30,5 +30,15 @@
     "A local copy of bookmarks was found in the project. Do you want to load?":"A local copy of bookmarks was found in the project. Do you want to load?",
     "The project's file was last modified at {0}":"The project's file was last modified at {0}",
     "One of the projects in the workspace has a bookmarks file. The most recent was modified at {0}":"One of the projects in the workspace has a bookmarks file. The most recent was modified at {0}",
-    "Clear":"Clear"
+    "Clear":"Clear",
+    "Toggle Global Bookmark":"Toggle Global Bookmark",
+    "Toggle Labeled Global Bookmark":"Toggle Labeled Global Bookmark",
+    "No global bookmarks found":"No global bookmarks found",
+    "Open a file first to toggle global bookmarks":"Open a file first to toggle global bookmarks",
+    "You can't toggle global bookmarks in Search Editor":"You can't toggle global bookmarks in Search Editor",
+    "Global Bookmark Label":"Global Bookmark Label",
+    "Type a label for your global bookmark":"Type a label for your global bookmark",
+    "You must define a label for the global bookmark.":"You must define a label for the global bookmark.",
+    "1 global bookmark":"1 global bookmark",
+    "global bookmarks":"global bookmarks"
 }

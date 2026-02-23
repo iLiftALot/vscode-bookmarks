@@ -1,18 +1,18 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Alessandro Fragnani. All rights reserved.
-*  Licensed under the GPLv3 License. See License.md in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Alessandro Fragnani. All rights reserved.
+ *  Licensed under the GPLv3 License. See License.md in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 import os = require("os");
 
 export enum Directions {
     Forward,
-    Backward
+    Backward,
 }
 
 export enum BadgeConfig {
     All = "all",
     Files = "files",
-    Off = "off"
+    Off = "off",
 }
 
 export const SEARCH_EDITOR_SCHEME = "search-editor-body";
@@ -25,7 +25,9 @@ export const NO_MORE_BOOKMARKS = -2;
 export const NO_BOOKMARKS_BEFORE = -3;
 export const NO_BOOKMARKS_AFTER = -4;
 
-export const WORKSPACE_ROOTPATH  = "$ROOTPATH$";
+export const WORKSPACE_ROOTPATH = "$ROOTPATH$";
 
 export const DEFAULT_GUTTER_ICON_FILL_COLOR = "#157EFB";
+export const DEFAULT_GLOBAL_GUTTER_ICON_FILL_COLOR = "#fb1515";
 export const DEFAULT_GUTTER_ICON_BORDER_COLOR = "#157EFB";
+export const DEFAULT_GLOBAL_GUTTER_ICON_BORDER_COLOR = "#be15fb";

@@ -12,11 +12,11 @@ import * as vscode from 'vscode';
 const timeout = async (ms = 200) => new Promise(resolve => setTimeout(resolve, ms));
 
 suite('Extension Test Suite', () => {
-    let extension: vscode.Extension<any>;
+    let extension: vscode.Extension<unknown>;
     vscode.window.showInformationMessage('Start all tests.');
 
     suiteSetup(() => {
-        extension = vscode.extensions.getExtension('alefragnani.Bookmarks') as vscode.Extension<any>;
+        extension = vscode.extensions.getExtension('nicholascorbin.bookmarks-custom') as vscode.Extension<unknown>;
     });
 
     test('Sample test', () => {

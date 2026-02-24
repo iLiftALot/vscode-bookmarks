@@ -1,17 +1,18 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Alessandro Fragnani. All rights reserved.
-*  Licensed under the GPLv3 License. See License.md in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Alessandro Fragnani. All rights reserved.
+ *  Licensed under the GPLv3 License. See License.md in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import os = require("os");
 import path = require("path");
 import * as vscode from "vscode";
 import { Uri, WorkspaceFolder } from "vscode";
+import { updateLinesWithBookmarkContext } from "../gutter/editorLineNumberContext";
+import { getFileUri, getRelativePath, uriExists } from "../utils/fs";
+import { logger } from "../utils/logger";
 import { Directions, NO_BOOKMARKS_AFTER, NO_BOOKMARKS_BEFORE, NO_MORE_BOOKMARKS, UNTITLED_SCHEME } from "./constants";
 import { createFile, File } from "./file";
-import { getFileUri, getRelativePath, uriExists } from "../utils/fs";
 import { clear, getLinePreview, indexOfBookmark } from "./operations";
-import { updateLinesWithBookmarkContext } from "../gutter/editorLineNumberContext";
 
 interface BookmarkAdded {
     file: File;
@@ -33,7 +34,7 @@ interface BookmarkUpdated {
     line: number;
     column?: number;
     linePreview?: string;
-    label?: string
+    label?: string;
 }
 
 enum ToggleMode {
@@ -44,11 +45,12 @@ enum ToggleMode {
 enum ToggleState {
     on = "on",
     off = "off",
-    editLabel = "edit"
+    editLabel = "edit",
 }
 
 export enum BookmarkClearEventReason {
-    singleFile, allFiles
+    singleFile,
+    allFiles,
 }
 
 export interface BookmarkClearEvent {
@@ -66,13 +68,19 @@ export class Controller {
     }
 
     private onDidAddBookmarkEmitter = new vscode.EventEmitter<BookmarkAdded>();
-    get onDidAddBookmark(): vscode.Event<BookmarkAdded> { return this.onDidAddBookmarkEmitter.event; }
+    get onDidAddBookmark(): vscode.Event<BookmarkAdded> {
+        return this.onDidAddBookmarkEmitter.event;
+    }
 
     private onDidRemoveBookmarkEmitter = new vscode.EventEmitter<BookmarkRemoved>();
-    get onDidRemoveBookmark(): vscode.Event<BookmarkRemoved> { return this.onDidRemoveBookmarkEmitter.event; }
+    get onDidRemoveBookmark(): vscode.Event<BookmarkRemoved> {
+        return this.onDidRemoveBookmarkEmitter.event;
+    }
 
     private onDidUpdateBookmarkEmitter = new vscode.EventEmitter<BookmarkUpdated>();
-    get onDidUpdateBookmark(): vscode.Event<BookmarkUpdated> { return this.onDidUpdateBookmarkEmitter.event; }
+    get onDidUpdateBookmark(): vscode.Event<BookmarkUpdated> {
+        return this.onDidUpdateBookmarkEmitter.event;
+    }
 
     public static normalize(uri: string): string {
         // a simple workaround for what appears to be a vscode.Uri bug
@@ -94,7 +102,6 @@ export class Controller {
     }
 
     public fromUri(uri: Uri) {
-
         if (uri.scheme === UNTITLED_SCHEME) {
             for (const file of this.files) {
                 if (file.uri?.toString() === uri.toString()) {
@@ -104,9 +111,7 @@ export class Controller {
             return;
         }
 
-        const uriPath = !this.workspaceFolder
-            ? uri.path
-            : getRelativePath(this.workspaceFolder.uri.path, uri.path);
+        const uriPath = !this.workspaceFolder ? uri.path : getRelativePath(this.workspaceFolder.uri.path, uri.path);
 
         for (const file of this.files) {
             if (file.path === uriPath) {
@@ -116,9 +121,7 @@ export class Controller {
     }
 
     public addFile(uri: Uri) {
-
         if (uri.scheme === UNTITLED_SCHEME) {
-
             // const untitleds = this.files.filter((file) => {
             //     return file.uri;
             // })?.map(file => file.path);
@@ -142,11 +145,9 @@ export class Controller {
             return;
         }
 
-        const uriPath = !this.workspaceFolder
-            ? uri.path
-            : getRelativePath(this.workspaceFolder.uri.path, uri.path);
+        const uriPath = !this.workspaceFolder ? uri.path : getRelativePath(this.workspaceFolder.uri.path, uri.path);
 
-        const paths = this.files.map(file => file.path);
+        const paths = this.files.map((file) => file.path);
         if (paths.indexOf(uriPath) < 0) {
             const bookmark = createFile(uriPath);
             this.files.push(bookmark);
@@ -154,11 +155,10 @@ export class Controller {
     }
 
     public nextDocumentWithBookmarks(active: File, direction: Directions) {
-
         let currentBookmark: File = active;
         let currentBookmarkId: number;
         for (let index = 0; index < this.files.length; index++) {
-            const element = this.files[ index ];
+            const element = this.files[index];
             if (element === active) {
                 currentBookmarkId = index;
             }
@@ -166,7 +166,6 @@ export class Controller {
 
         // eslint-disable-next-line no-async-promise-executor
         return new Promise(async (resolve, reject) => {
-
             const wrapNavigation: boolean = vscode.workspace.getConfiguration("bookmarks").get("wrapNavigation", true);
 
             let wrapStatus: number;
@@ -190,7 +189,7 @@ export class Controller {
                 return;
             }
 
-            currentBookmark = this.files[ currentBookmarkId ];
+            currentBookmark = this.files[currentBookmarkId];
 
             if (currentBookmark.bookmarks.length === 0) {
                 if (currentBookmark === this.activeFile) {
@@ -223,14 +222,13 @@ export class Controller {
                         });
                 }
             }
-
         });
-
     }
 
     public clear(book?: File): void {
         const b: File = book ? book : this.activeFile;
         clear(b);
+        logger.info("controller.clear", "Cleared bookmarks from file", { path: b?.path });
         this.onDidClearBookmarksEmitter.fire({ file: b, reason: BookmarkClearEventReason.singleFile });
         updateLinesWithBookmarkContext(this.activeFile);
     }
@@ -239,6 +237,7 @@ export class Controller {
         for (const element of this.files) {
             clear(element);
         }
+        logger.info("controller.clearAll", "Cleared bookmarks from all files", { files: this.files.length });
         this.onDidClearBookmarksEmitter.fire({ reason: BookmarkClearEventReason.allFiles });
         updateLinesWithBookmarkContext(this.activeFile);
     }
@@ -248,8 +247,8 @@ export class Controller {
             return ToggleState.on;
         }
 
-        const lines = selections.map(item => item.active.line);
-        if (lines.every(elem => this.activeFile.bookmarks.map(item => item.line).indexOf(elem) > -1)) {
+        const lines = selections.map((item) => item.active.line);
+        if (lines.every((elem) => this.activeFile.bookmarks.map((item) => item.line).indexOf(elem) > -1)) {
             return ToggleState.off;
         } else {
             return ToggleState.on;
@@ -258,7 +257,9 @@ export class Controller {
 
     public async toggle(selections: readonly vscode.Selection[], label?: string, book?: File): Promise<boolean> {
         const b: File = book ? book : this.activeFile;
-        const toggleMode = vscode.workspace.getConfiguration("bookmarks").get<string>("multicursor.toggleMode", "allLinesAtOnce");
+        const toggleMode = vscode.workspace
+            .getConfiguration("bookmarks")
+            .get<string>("multicursor.toggleMode", "allLinesAtOnce");
         let toggleState: ToggleState | undefined;
         if (toggleMode === ToggleMode.allLinesAtOnce) {
             toggleState = this.decideToggleState(selections);
@@ -283,7 +284,8 @@ export class Controller {
                     const index = indexOfBookmark(b, selection.active.line);
                     if (index > -1) {
                         this.removeBookmark(index, selection.active.line, b);
-                    } else { // toggle on -> add
+                    } else {
+                        // toggle on -> add
                         await this.addBookmark(selection.active, label, b);
                         added = true;
                     }
@@ -301,10 +303,16 @@ export class Controller {
                     }
                 }
             }
+            logger.debug("controller.toggle", "Toggle processed", {
+                file: b?.path,
+                selections: selections.length,
+                toggledLines: toggledLines.length,
+                added,
+                mode: toggleMode,
+            });
             return resolve(added);
         });
     }
-
 
     public async addBookmark(position: vscode.Position, label?: string, book?: File): Promise<void> {
         const b: File = book ? book : this.activeFile;
@@ -312,7 +320,7 @@ export class Controller {
             b.bookmarks.push({
                 line: position.line,
                 column: position.character,
-                label: ""
+                label: "",
             });
             let linePreview: string;
             if (book) {
@@ -326,44 +334,52 @@ export class Controller {
                 line: position.line + 1,
                 column: position.character + 1,
                 linePreview,
-                uri: this.getFileUri(b)
+                uri: this.getFileUri(b),
             });
         } else {
             b.bookmarks.push({
                 line: position.line,
                 column: position.character,
-                label
+                label,
             });
             this.onDidAddBookmarkEmitter.fire({
                 file: b,
                 line: position.line + 1,
                 column: position.character + 1,
                 label,
-                uri: this.getFileUri(b)
+                uri: this.getFileUri(b),
             });
         }
+
+        logger.debug("controller.addBookmark", "Bookmark added", {
+            file: b?.path,
+            line: position.line,
+            column: position.character,
+            labeled: !!label,
+        });
     }
 
     public removeBookmark(index: number, aline: number, book?: File): void {
         const b: File = book ? book : this.activeFile;
         b.bookmarks.splice(index, 1);
+        logger.debug("controller.removeBookmark", "Bookmark removed", { file: b?.path, line: aline, index });
         this.onDidRemoveBookmarkEmitter.fire({
             bookmark: b,
-            line: aline + 1
+            line: aline + 1,
         });
     }
 
     public updateLabel(index: number, position: vscode.Position, newLabel: string): void {
-        this.activeFile.bookmarks[ index ].line = position.line;
-        this.activeFile.bookmarks[ index ].column = position.character;
-        this.activeFile.bookmarks[ index ].label = newLabel;
-        if (newLabel === '' || newLabel === undefined) {
+        this.activeFile.bookmarks[index].line = position.line;
+        this.activeFile.bookmarks[index].column = position.character;
+        this.activeFile.bookmarks[index].label = newLabel;
+        if (newLabel === "" || newLabel === undefined) {
             this.onDidUpdateBookmarkEmitter.fire({
                 file: this.activeFile,
                 index,
                 line: position.line + 1,
                 column: position.character + 1,
-                linePreview: vscode.window.activeTextEditor.document.lineAt(position.line).text.trim()
+                linePreview: vscode.window.activeTextEditor.document.lineAt(position.line).text.trim(),
             });
         } else {
             this.onDidUpdateBookmarkEmitter.fire({
@@ -371,43 +387,38 @@ export class Controller {
                 index,
                 line: position.line + 1,
                 column: position.character + 1,
-                label: newLabel
+                label: newLabel,
             });
         }
     }
 
     public updateBookmark(index: number, oldLine: number, newLine: number, book?: File): void {
         const b: File = book ? book : this.activeFile;
-        b.bookmarks[ index ].line = newLine;
-        if (!b.bookmarks[ index ].label) {
+        b.bookmarks[index].line = newLine;
+        if (!b.bookmarks[index].label) {
             this.onDidUpdateBookmarkEmitter.fire({
                 file: b,
                 index,
                 line: newLine + 1,
-                linePreview: vscode.window.activeTextEditor.document.lineAt(newLine).text.trim()
+                linePreview: vscode.window.activeTextEditor.document.lineAt(newLine).text.trim(),
             });
         } else {
             this.onDidUpdateBookmarkEmitter.fire({
                 file: b,
                 index,
                 line: newLine + 1,
-                label: b.bookmarks[ index ].label
+                label: b.bookmarks[index].label,
             });
         }
     }
 
     public hasAnyBookmark(): boolean {
-        // let totalBookmarkCount = 0;
-        // for (const element of this.files) {
-        //     totalBookmarkCount = totalBookmarkCount + element.bookmarks.length; 
-        // }
-        // return totalBookmarkCount > 0;
         return this.countBookmarks() > 0;
     }
 
     public countBookmarks(): number {
         let totalBookmarkCount = 0;
-        for (const element of this.files) {
+        for (const element of this.files || []) {
             totalBookmarkCount = totalBookmarkCount + element.bookmarks.length;
         }
         return totalBookmarkCount;
@@ -415,7 +426,7 @@ export class Controller {
 
     public countFilesWithBookmarks(): number {
         let totalFilesWithBookmarks = 0;
-        for (const element of this.files) {
+        for (const element of this.files || []) {
             if (element.bookmarks.length > 0) {
                 totalFilesWithBookmarks++;
             }
@@ -429,11 +440,10 @@ export class Controller {
             return;
         }
 
-        // this.storage.load(jsonObject, relativePath, 
+        // this.storage.load(jsonObject, relativePath,
         //     vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0 ? vscode.workspace.workspaceFolders[0].uri.fsPath : undefined);
         // OLDER v1 format
-        if ((jsonObject.bookmarks)) {
-
+        if (jsonObject.bookmarks) {
             for (const file of jsonObject.bookmarks) {
                 // if (relativePath) {
                 //     file.fsPath = file.fsPath.replace(WORKSPACE_ROOTPATH, vscode.workspace.workspaceFolders[0].uri.fsPath);
@@ -459,7 +469,6 @@ export class Controller {
         // NEW v2 format
         if (!jsonObject.files) {
             for (const file of jsonObject) {
-
                 // untitled files, ignore (for now)
                 const ff = <string>file.path;
                 if (ff.match(/Untitled-\d+/)) {
@@ -483,7 +492,7 @@ export class Controller {
                     bookmark.bookmarks.push({
                         line: bkm.line,
                         column: bkm.column,
-                        label: bkm.label
+                        label: bkm.label,
                     });
                 }
                 this.files.push(bookmark);
@@ -493,10 +502,8 @@ export class Controller {
 
         // NEWER v3 format
         for (const file of jsonObject.files) {
-            const bookmark = createFile(file.path);//??, file.uri ? <Uri>file.uri : undefined);
-            bookmark.bookmarks = [
-                ...file.bookmarks
-            ];
+            const bookmark = createFile(file.path); //??, file.uri ? <Uri>file.uri : undefined);
+            bookmark.bookmarks = [...file.bookmarks];
             this.files.push(bookmark);
         }
     }
@@ -530,7 +537,7 @@ export class Controller {
     // private updateRelativePath = (path: string): string => {
     //     const wsPath: vscode.WorkspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(path));
     //     if (wsPath) {
-    //         path = path.replace(wsPath.uri.fsPath, "$ROOTPATH$"); 
+    //         path = path.replace(wsPath.uri.fsPath, "$ROOTPATH$");
     //     }
     //     return path;
     // }

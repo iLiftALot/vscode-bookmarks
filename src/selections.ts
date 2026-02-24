@@ -1,33 +1,34 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Alessandro Fragnani. All rights reserved.
-*  Licensed under the GPLv3 License. See License.md in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Alessandro Fragnani. All rights reserved.
+ *  Licensed under the GPLv3 License. See License.md in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-import { window, Position, l10n } from "vscode";
+import { Position, l10n, window } from "vscode";
+import { expandSelectionToPosition, selectLines, shrinkSelectionToPosition } from "vscode-ext-selection";
 import { Directions } from "./core/constants";
-import { selectLines, expandSelectionToPosition, shrinkSelectionToPosition } from "vscode-ext-selection";
-import { Controller } from "./core/controller";
 import { nextBookmark } from "./core/operations";
+import { Bookmark } from "./core/bookmark";
+import { logger } from "./utils/logger";
 
-export function selectBookmarkedLines(bookmarks: Controller) {
+export function selectBookmarkedLines(bookmarks: Bookmark[]) {
     if (!window.activeTextEditor) {
         window.showInformationMessage(l10n.t("Open a file first to clear bookmarks"));
         return;
     }
 
-    if (bookmarks.activeFile.bookmarks.length === 0) {
+    if (bookmarks.length === 0) {
         window.showInformationMessage(l10n.t("No Bookmarks found"));
         return;
     }
 
     const lines: number[] = [];
-    for (const bookmark of bookmarks.activeFile.bookmarks) {
+    for (const bookmark of bookmarks) {
         lines.push(bookmark.line);
     }
     selectLines(window.activeTextEditor, lines);
 }
 
-export function shrinkSelection(bookmarks: Controller) {
+export function shrinkSelection(bookmarks: Bookmark[]) {
     if (!window.activeTextEditor) {
         window.showInformationMessage(l10n.t("Open a file first to shrink bookmark selection"));
         return;
@@ -43,14 +44,18 @@ export function shrinkSelection(bookmarks: Controller) {
         return;
     }
 
-    if (bookmarks.activeFile.bookmarks.length === 0) {
+    if (bookmarks.length === 0) {
         window.showInformationMessage(l10n.t("No Bookmarks found"));
         return;
     }
 
     // which direction?
-    const direction: Directions = window.activeTextEditor.selection.isReversed ? Directions.Forward : Directions.Backward;
-    const activeSelectionStartLine: number = window.activeTextEditor.selection.isReversed ? window.activeTextEditor.selection.end.line : window.activeTextEditor.selection.start.line;
+    const direction: Directions = window.activeTextEditor.selection.isReversed
+        ? Directions.Forward
+        : Directions.Backward;
+    const activeSelectionStartLine: number = window.activeTextEditor.selection.isReversed
+        ? window.activeTextEditor.selection.end.line
+        : window.activeTextEditor.selection.start.line;
 
     let currPosition: Position;
     if (direction === Directions.Forward) {
@@ -59,15 +64,16 @@ export function shrinkSelection(bookmarks: Controller) {
         currPosition = window.activeTextEditor.selection.end;
     }
 
-    nextBookmark(bookmarks.activeFile, currPosition, direction)
+    nextBookmark(bookmarks, currPosition, direction)
         .then((next) => {
             if (typeof next === "number") {
                 window.setStatusBarMessage(l10n.t("No more bookmarks"), 2000);
                 return;
             } else {
-
-                if ((direction === Directions.Backward && next.line < activeSelectionStartLine) ||
-                    (direction === Directions.Forward && next.line > activeSelectionStartLine)) {
+                if (
+                    (direction === Directions.Backward && next.line < activeSelectionStartLine) ||
+                    (direction === Directions.Forward && next.line > activeSelectionStartLine)
+                ) {
                     window.setStatusBarMessage(l10n.t("No more bookmarks to shrink"), 2000);
                 } else {
                     shrinkSelectionToPosition(window.activeTextEditor, next, direction);
@@ -75,17 +81,17 @@ export function shrinkSelection(bookmarks: Controller) {
             }
         })
         .catch((error) => {
-            console.log("activeBookmark.nextBookmark REJECT" + error);
+            logger.error("selection.shrinkSelection", "nextBookmark rejected while shrinking selection", error);
         });
 }
 
-export function expandSelectionToNextBookmark(bookmarks: Controller, direction: Directions) {
+export function expandSelectionToNextBookmark(bookmarks: Bookmark[], direction: Directions) {
     if (!window.activeTextEditor) {
         window.showInformationMessage(l10n.t("Open a file first to clear bookmarks"));
         return;
     }
 
-    if (bookmarks.activeFile.bookmarks.length === 0) {
+    if (bookmarks.length === 0) {
         window.showInformationMessage(l10n.t("No Bookmarks found"));
         return;
     }
@@ -101,7 +107,7 @@ export function expandSelectionToNextBookmark(bookmarks: Controller, direction: 
         }
     }
 
-    nextBookmark(bookmarks.activeFile, currPosition, direction)
+    nextBookmark(bookmarks, currPosition, direction)
         .then((next) => {
             if (typeof next === "number") {
                 window.setStatusBarMessage(l10n.t("No more bookmarks"), 2000);
@@ -111,6 +117,6 @@ export function expandSelectionToNextBookmark(bookmarks: Controller, direction: 
             }
         })
         .catch((error) => {
-            console.log("activeBookmark.nextBookmark REJECT" + error);
+            logger.error("selection.expandSelectionToNextBookmark", "nextBookmark rejected while expanding selection", error);
         });
 }

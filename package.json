@@ -977,6 +977,7 @@
         }
     },
     "scripts": {
+        "dev": "npm run watch",
         "build": "webpack --mode development",
         "watch": "webpack --watch --mode development",
         "vscode:prepublish": "webpack --mode production",

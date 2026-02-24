@@ -7,7 +7,7 @@ import path = require("path");
 import * as vscode from "vscode";
 import { DEFAULT_GLOBAL_GUTTER_ICON_BORDER_COLOR, DEFAULT_GLOBAL_GUTTER_ICON_FILL_COLOR } from "../core/constants";
 import { Container } from "../core/container";
-import { GlobalBookmarksManager, GlobalFile } from "./globalBookmarks";
+import { GLOBAL_SIDEBAR_HIDE_POSITION, GlobalBookmarksManager, GlobalFile } from "./globalBookmarks";
 
 // --- Tree Node types ---
 
@@ -95,7 +95,7 @@ export class GlobalBookmarkProvider implements vscode.TreeDataProvider<GlobalFil
         }
 
         if (element instanceof GlobalFileNode) {
-            const hidePosition = Container.context.globalState.get<boolean>("bookmarks.sidebar.hidePosition", false);
+            const hidePosition = Container.globalState.get(GLOBAL_SIDEBAR_HIDE_POSITION, false);
             const uri = vscode.Uri.file(element.filePath);
             const nodes: GlobalBookmarkNode[] = [];
 

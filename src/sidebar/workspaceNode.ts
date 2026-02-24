@@ -10,7 +10,6 @@ import { FileNode } from "./fileNode";
 import { BookmarkNodeKind } from "./nodes";
 
 export class WorkspaceNode extends TreeItem {
-
     constructor(
         public readonly label: string,
         public readonly workspaceFolder: WorkspaceFolder,

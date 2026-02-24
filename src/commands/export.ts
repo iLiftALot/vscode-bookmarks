@@ -8,6 +8,7 @@ import { Container } from "../core/container";
 import { Controller } from "../core/controller";
 import { getRelativePath, uriExists, uriWith } from "../utils/fs";
 import { getLinePreview } from "../core/operations";
+import { logger } from "../utils/logger";
 
 interface BookmarkExportItem {
     file: string;
@@ -134,11 +135,13 @@ function formatBookmarks(bookmarks: BookmarkExportItem[], pattern: string): stri
 export function registerExport(getControllers: () => Controller[]) {
     Container.context.subscriptions.push(commands.registerCommand("bookmarks.export", async () => {
         try {
+            logger.info("export.registerExport", "Export command triggered");
             const controllers = getControllers();
             const bookmarks = await collectBookmarks(controllers);
             
             if (bookmarks.length === 0) {
                 window.showInformationMessage(l10n.t("No bookmarks to export."));
+                logger.info("export.registerExport", "No bookmarks found to export");
                 return;
             }
 
@@ -161,7 +164,9 @@ export function registerExport(getControllers: () => Controller[]) {
             window.showInformationMessage(
                 l10n.t("Bookmarks exported successfully. {0} bookmarks found.", bookmarks.length)
             );
+            logger.info("export.registerExport", "Bookmarks exported", { count: bookmarks.length });
         } catch (error) {
+            logger.error("export.registerExport", "Error exporting bookmarks", error);
             window.showErrorMessage(l10n.t("Error exporting bookmarks: {0}", error.toString()));
         }
     }));

@@ -4,13 +4,8 @@
 			"path": "src/extension.ts",
 			"bookmarks": [
 				{
-					"line": 244,
-					"column": 10,
-					"label": ""
-				},
-				{
-					"line": 548,
-					"column": 21,
+					"line": 629,
+					"column": 17,
 					"label": ""
 				}
 			]
@@ -31,6 +26,161 @@
 				{
 					"line": 125,
 					"column": 6,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "src/global/globalBookmarks.ts",
+			"bookmarks": [
+				{
+					"line": 14,
+					"column": 13,
+					"label": ""
+				},
+				{
+					"line": 19,
+					"column": 8,
+					"label": ""
+				},
+				{
+					"line": 28,
+					"column": 8,
+					"label": ""
+				},
+				{
+					"line": 33,
+					"column": 8,
+					"label": ""
+				},
+				{
+					"line": 42,
+					"column": 16,
+					"label": ""
+				},
+				{
+					"line": 66,
+					"column": 12,
+					"label": ""
+				},
+				{
+					"line": 70,
+					"column": 13,
+					"label": ""
+				},
+				{
+					"line": 93,
+					"column": 13,
+					"label": ""
+				},
+				{
+					"line": 107,
+					"column": 11,
+					"label": ""
+				},
+				{
+					"line": 117,
+					"column": 20,
+					"label": ""
+				},
+				{
+					"line": 126,
+					"column": 16,
+					"label": ""
+				},
+				{
+					"line": 135,
+					"column": 17,
+					"label": ""
+				},
+				{
+					"line": 168,
+					"column": 21,
+					"label": ""
+				},
+				{
+					"line": 197,
+					"column": 20,
+					"label": ""
+				},
+				{
+					"line": 206,
+					"column": 19,
+					"label": ""
+				},
+				{
+					"line": 232,
+					"column": 15,
+					"label": ""
+				},
+				{
+					"line": 246,
+					"column": 15,
+					"label": ""
+				},
+				{
+					"line": 253,
+					"column": 15,
+					"label": ""
+				},
+				{
+					"line": 257,
+					"column": 17,
+					"label": ""
+				},
+				{
+					"line": 265,
+					"column": 17,
+					"label": ""
+				},
+				{
+					"line": 272,
+					"column": 17,
+					"label": ""
+				},
+				{
+					"line": 281,
+					"column": 17,
+					"label": ""
+				},
+				{
+					"line": 289,
+					"column": 17,
+					"label": ""
+				},
+				{
+					"line": 301,
+					"column": 17,
+					"label": ""
+				},
+				{
+					"line": 306,
+					"column": 16,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "src/core/operations.ts",
+			"bookmarks": [
+				{
+					"line": 13,
+					"column": 21,
+					"label": ""
+				}
+			]
+		},
+		{
+			"path": "src/storage/workspaceState.ts",
+			"bookmarks": [
+				{
+					"line": 19,
+					"column": 24,
+					"label": ""
+				},
+				{
+					"line": 94,
+					"column": 23,
 					"label": ""
 				}
 			]

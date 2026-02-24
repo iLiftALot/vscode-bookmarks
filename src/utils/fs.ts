@@ -1,14 +1,21 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Alessandro Fragnani. All rights reserved.
-*  Licensed under the GPLv3 License. See License.md in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Alessandro Fragnani. All rights reserved.
+ *  Licensed under the GPLv3 License. See License.md in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import os = require("os");
 import path = require("path");
-import { Uri, workspace, WorkspaceFolder } from "vscode";
+import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { Bookmark } from "../core/bookmark";
 import { UNTITLED_SCHEME } from "../core/constants";
+import { Container } from "../core/container";
 import { File } from "../core/file";
+import { logger } from "./logger";
+
+interface FileSystemData extends path.ParsedPath {
+    workspaceData: WorkspaceFolder | undefined;
+    fileData: File;
+}
 
 export function getRelativePath(folder: string, filePath: string) {
     if (!folder) {
@@ -28,9 +35,13 @@ export function getRelativePath(folder: string, filePath: string) {
 export function appendPath(uri: Uri, pathSuffix: string): Uri {
     const pathPrefix = uri.path.endsWith("/") ? uri.path : `${uri.path}/`;
     const filePath = `${pathPrefix}${pathSuffix}`;
-
+    logger.debug("fs.appendPath", "Appending path to URI", {
+        originalUri: uri.toString(),
+        pathSuffix: pathSuffix,
+        resultingPath: filePath,
+    });
     return uri.with({
-        path: filePath
+        path: filePath,
     });
 }
 
@@ -39,17 +50,14 @@ export function uriJoin(uri: Uri, ...paths: string[]): string {
 }
 
 export function uriWith(uri: Uri, prefix: string, filePath: string): Uri {
-    const newPrefix = prefix === "/" 
-        ? ""
-        : prefix;
+    const newPrefix = prefix === "/" ? "" : prefix;
 
     return uri.with({
-        path: `${newPrefix}/${filePath}`
+        path: `${newPrefix}/${filePath}`,
     });
 }
 
 export async function uriExists(uri: Uri): Promise<boolean> {
-    
     if (uri.scheme === UNTITLED_SCHEME) {
         return true;
     }
@@ -81,17 +89,17 @@ export async function createDirectory(dir: string): Promise<void> {
 
 export async function readFile(filePath: string): Promise<string> {
     const bytes = await workspace.fs.readFile(Uri.parse(filePath));
-    return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    return JSON.parse(new TextDecoder("utf-8").decode(bytes));
 }
 
 export async function readFileUri(uri: Uri): Promise<string> {
     const bytes = await workspace.fs.readFile(uri);
-    return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    return JSON.parse(new TextDecoder("utf-8").decode(bytes));
 }
 
 export async function readRAWFileUri(uri: Uri): Promise<string> {
     const bytes = await workspace.fs.readFile(uri);
-    return new TextDecoder('utf-8').decode(bytes);
+    return new TextDecoder("utf-8").decode(bytes);
 }
 
 export async function writeFile(filePath: string, contents: string): Promise<void> {
@@ -105,7 +113,7 @@ export async function writeFileUri(uri: Uri, contents: string): Promise<void> {
 }
 
 export async function deleteFileUri(uri: Uri): Promise<void> {
-    await workspace.fs.delete(uri, { recursive: false, useTrash: false});
+    await workspace.fs.delete(uri, { recursive: false, useTrash: false });
 }
 
 export function parsePosition(position: string): Bookmark | undefined {
@@ -113,24 +121,69 @@ export function parsePosition(position: string): Bookmark | undefined {
     const matches = re.exec(position);
     if (matches) {
         return {
-            line: parseInt(matches[ 1 ], 10),
-            column: parseInt(matches[ 2 ], 10)
+            line: parseInt(matches[1], 10),
+            column: parseInt(matches[2], 10),
         };
     }
     return undefined;
 }
 
-export function getFileUri(file: File, workspaceFolder: WorkspaceFolder): Uri {
-    if (file.uri) {
+export function getFileUri(file?: File, workspaceFolder?: WorkspaceFolder): Uri {
+    if (file?.uri) {
         return file.uri;
     }
 
     if (!workspaceFolder) {
-        return Uri.file(file.path);
+        return Uri.file(file?.path ?? "");
+
     }
 
-    const prefix = workspaceFolder.uri.path.endsWith("/")
-        ? workspaceFolder.uri.path
-        : `${workspaceFolder.uri.path}/`;
+    const prefix = workspaceFolder.uri.path.endsWith("/") ? workspaceFolder.uri.path : `${workspaceFolder.uri.path}/`;
     return uriWith(workspaceFolder.uri, prefix, file.path);
+}
+
+export function fileSystemData(wsFolder: WorkspaceFolder | string | undefined): FileSystemData {
+    const workspaceFolder: WorkspaceFolder | undefined =
+        typeof wsFolder === "object" || typeof wsFolder === "undefined"
+            ? (wsFolder ?? Container.workspaceManager?.workspaceFolder ?? workspace.workspaceFolders?.[0])
+            : workspace.getWorkspaceFolder(Uri.file(wsFolder));
+
+    if (!workspaceFolder) {
+        return {
+            workspaceData: undefined,
+            fileData: { bookmarks: [], path: "", uri: undefined },
+            root: "",
+            dir: "",
+            base: "",
+            ext: "",
+            name: "",
+        };
+    }
+
+    let wsBookmarks: Bookmark[] = [];
+    let gsBookmarks: Bookmark[] = [];
+    try {
+        wsBookmarks = JSON.parse(Container.workspaceState.get("bookmarks", "[]"));
+    } catch (e) {
+        logger.error("workspaceState.fileSystemData", "Error parsing bookmarks from workspace state", e);
+        window.showErrorMessage(l10n.t("Error loading Bookmarks: ") + e.toString());
+    }
+    try {
+        gsBookmarks = JSON.parse(Container.globalState.get("globalBookmarks", "[]"));
+    } catch (e) {
+        logger.error("workspaceState.fileSystemData", "Error parsing bookmarks from global state", e);
+        window.showErrorMessage(l10n.t("Error loading Global Bookmarks: ") + e.toString());
+    }
+
+    const fileData: File = {
+        bookmarks: [...wsBookmarks, ...gsBookmarks].sort((a, b) => a.line - b.line),
+        path: workspaceFolder.uri.fsPath,
+        uri: workspaceFolder.uri,
+    };
+    const parsed: path.ParsedPath = path.parse(workspaceFolder.uri.fsPath);
+    return {
+        workspaceData: workspaceFolder,
+        fileData: fileData,
+        ...parsed
+    };
 }

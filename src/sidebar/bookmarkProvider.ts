@@ -15,6 +15,7 @@ import { BookmarkNode, BookmarkPreview } from "./bookmarkNode";
 import { WorkspaceNode } from "./workspaceNode";
 import { BookmarkNodeKind } from "./nodes";
 import { BadgeConfig } from "../core/constants";
+import { GLOBAL_SIDEBAR_HIDE_POSITION, GLOBAL_VIEW_AS_LIST } from "../global/globalBookmarks";
 
 export class BookmarkProvider implements vscode.TreeDataProvider<BookmarkNode | WorkspaceNode | FileNode> {
 
@@ -180,10 +181,6 @@ export class BookmarkProvider implements vscode.TreeDataProvider<BookmarkNode | 
 
     // very much based in `listFromAllFiles` command
     public getChildren(element?: FileNode | WorkspaceNode): Thenable<BookmarkNode[] | WorkspaceNode[] | FileNode[]> {
-
-        // no bookmark
-        // let totalBookmarkCount = 0;
-
         let someFileHasBookmark: boolean;
         for (const controller of this.controllers) {
             someFileHasBookmark = controller.hasAnyBookmark();
@@ -258,10 +255,8 @@ export class BookmarkProvider implements vscode.TreeDataProvider<BookmarkNode | 
 
                 if (element.kind === BookmarkNodeKind.NODE_FILE) {
                     const ll: BookmarkNode[] = [];
-
                     const ne = <BookmarkNode>element;
-
-                    const hidePosition = Container.context.globalState.get<boolean>("bookmarks.sidebar.hidePosition", false);
+                    const hidePosition = Container.globalState.get(GLOBAL_SIDEBAR_HIDE_POSITION, false);
 
                     for (const bbb of ne.books) {
                         ll.push(new BookmarkNode(bbb.preview, !hidePosition ? `(Ln ${bbb.line}, Col ${bbb.column})` : undefined, vscode.TreeItemCollapsibleState.None, BookmarkNodeKind.NODE_BOOKMARK, null, [], {
@@ -276,9 +271,7 @@ export class BookmarkProvider implements vscode.TreeDataProvider<BookmarkNode | 
                     resolve([]);
                 }
             } else { // ROOT
-
-                //
-                const viewAsList = Container.context.globalState.get<boolean>("viewAsList", false);
+                const viewAsList = Container.globalState.get(GLOBAL_VIEW_AS_LIST, false);
 
                 // has more than one controller/worskpace and View As TREE, just loop through the controllers and returns its workspaces
                 if (this.controllers.length > 1 && !viewAsList) {
@@ -349,7 +342,7 @@ export class BookmarkProvider implements vscode.TreeDataProvider<BookmarkNode | 
 
                         // choose the view
                         if (viewAsList) {
-                            const hidePosition = Container.context.globalState.get<boolean>("bookmarks.sidebar.hidePosition", false);
+                            const hidePosition = Container.globalState.get(GLOBAL_SIDEBAR_HIDE_POSITION, false);
                             const bookmarkNodes: BookmarkNode[] = [];
                             lll.forEach(FileNode => {
                                 for (const bbb of FileNode.books) {

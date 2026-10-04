@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+    // Required by the inherited eslint-config-vscode-ext configuration.
+    "ignoreDependencies": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser"
+    ],
+    "overrides": [
+        {
+            // PageBuilder replaces ${cssUrl} with a webview URI at runtime.
+            "files": ["vscode-whats-new/ui/whats-new.html"],
+            "rules": {
+                "unresolved-imports": "off"
+            }
+        }
+    ]
+}

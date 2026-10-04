@@ -162,7 +162,7 @@ export function registerExport(getControllers: () => Controller[]) {
                 l10n.t("Bookmarks exported successfully. {0} bookmarks found.", bookmarks.length)
             );
         } catch (error) {
-            window.showErrorMessage(l10n.t("Error exporting bookmarks: {0}", error.toString()));
+            window.showErrorMessage(l10n.t("Error exporting bookmarks: {0}", String(error)));
         }
     }));
 }

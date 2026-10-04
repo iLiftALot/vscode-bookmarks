@@ -32,7 +32,7 @@ export function nextBookmark(file: File, currentPosition: Position, direction: D
 
         const wrapNavigation: boolean = workspace.getConfiguration("bookmarks").get("wrapNavigation", true);
 
-        let nextBookmark: Position;
+        let nextBookmark: Position | undefined = undefined;
 
         if (direction === Directions.Forward) {
             for (const element of file.bookmarks) {

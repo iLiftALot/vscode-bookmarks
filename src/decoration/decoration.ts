@@ -137,7 +137,7 @@ export function updateDecorationsInActiveEditor(
         if (invalids.length > 0) {
             let idxInvalid: number;
             for (const element of invalids) {
-                idxInvalid = indexOfBookmark(bookmarks.activeFile, element); 
+                idxInvalid = indexOfBookmark(bookmarks.activeFile, element.line); 
                 bookmarks.activeFile.bookmarks.splice(idxInvalid, 1);
             }
         }

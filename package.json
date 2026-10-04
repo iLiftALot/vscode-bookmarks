@@ -61,10 +61,12 @@
             "bookmarks": [
                 {
                     "id": "bookmarksExplorer",
+                    "icon": "$(bookmark)",
                     "name": "%bookmarks.views.Explorer.name%"
                 },
                 {
                     "id": "bookmarksHelpAndFeedback",
+                    "icon": "$(bookmark)",
                     "name": "%bookmarks.views.HelpAndFeedback.name%",
                     "visibility": "collapsed"
                 }
@@ -899,8 +901,7 @@
         "test": "npm run test-compile && npm run just-test"
     },
     "dependencies": {
-        "os-browserify": "^0.3.0",
-        "path-browserify": "^1.0.1",
+        "semver": "^7.7.2",
         "vscode-ext-codicons": "^1.0.0",
         "vscode-ext-decoration": "1.1.0",
         "vscode-ext-help-and-feedback-view": "^1.0.1",
@@ -916,6 +917,7 @@
         "@vscode/test-electron": "3.1.0",
         "eslint": "^8.1.0",
         "eslint-config-vscode-ext": "^1.1.0",
+        "glob": "^8.1.0",
         "mocha": "^11.1.0",
         "terser-webpack-plugin": "^5.2.4",
         "ts-loader": "^9.2.5",

@@ -466,7 +466,10 @@ export class Controller {
             : undefined;
 
         if (!Array.isArray(files) || !files.every(isStoredFile)) {
-            throw new TypeError("Invalid bookmark storage data.");
+            console.error("Invalid bookmark storage data:", files);
+            throw new TypeError(
+                "Invalid bookmark storage data. Expected an array of stored files or a valid bookmarks object."
+            );
         }
 
         const loadedFiles = files

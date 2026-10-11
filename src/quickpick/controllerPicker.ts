@@ -12,23 +12,24 @@ interface ControllerQuickPickItem extends QuickPickItem {
     controller: Controller;
 }
 
-export async function pickController(controllers: Controller[], activeController: Controller): Promise<Controller | undefined> {
-    
+export async function pickController(
+    controllers: Controller[],
+    activeController: Controller
+): Promise<Controller | undefined> {
     if (controllers.length === 1) {
         return activeController;
-    } 
+    }
 
-    const items: ControllerQuickPickItem[] = controllers.map(controller => {
+    const items: ControllerQuickPickItem[] = controllers.map((controller) => {
         return {
-            label: codicons.root_folder + ' ' + controller.workspaceFolder.name,
+            label: codicons.root_folder + " " + controller.workspaceFolder.name,
             description: path.dirname(controller.workspaceFolder.uri.path),
             controller: controller
         };
-    }
-    );
+    });
 
     const selection = await window.showQuickPick(items, {
-        placeHolder: 'Select a workspace'
+        placeHolder: "Select a workspace"
     });
 
     if (typeof selection === "undefined") {

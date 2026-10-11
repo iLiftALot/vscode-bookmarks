@@ -14,10 +14,9 @@ export interface File {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FileList extends Array<File> { }
+export interface FileList extends Array<File> {}
 
 export function createFile(filePath: string, uri?: Uri): File {
-
     // let newUri: Uri = uri;
     // if (uri?.scheme === UNTITLED_SCHEME) {
     //     newUri = Uri.parse(`${UNTITLED_SCHEME}:${uri.path}`)
@@ -26,7 +25,7 @@ export function createFile(filePath: string, uri?: Uri): File {
     const newFile: File = {
         path: filePath,
         bookmarks: [],
-        uri//: newUri
+        uri // : newUri
     };
     return newFile;
 }

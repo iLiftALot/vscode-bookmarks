@@ -3,9 +3,9 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { window, Position, l10n } from "vscode";
+import { Position, l10n, window } from "vscode";
+import { expandSelectionToPosition, selectLines, shrinkSelectionToPosition } from "vscode-ext-selection";
 import { Directions } from "./core/constants";
-import { selectLines, expandSelectionToPosition, shrinkSelectionToPosition } from "vscode-ext-selection";
 import { Controller } from "./core/controller";
 import { nextBookmark } from "./core/operations";
 
@@ -49,8 +49,12 @@ export function shrinkSelection(bookmarks: Controller) {
     }
 
     // which direction?
-    const direction: Directions = window.activeTextEditor.selection.isReversed ? Directions.Forward : Directions.Backward;
-    const activeSelectionStartLine: number = window.activeTextEditor.selection.isReversed ? window.activeTextEditor.selection.end.line : window.activeTextEditor.selection.start.line;
+    const direction: Directions = window.activeTextEditor.selection.isReversed
+        ? Directions.Forward
+        : Directions.Backward;
+    const activeSelectionStartLine: number = window.activeTextEditor.selection.isReversed
+        ? window.activeTextEditor.selection.end.line
+        : window.activeTextEditor.selection.start.line;
 
     let currPosition: Position;
     if (direction === Directions.Forward) {
@@ -65,9 +69,10 @@ export function shrinkSelection(bookmarks: Controller) {
                 window.setStatusBarMessage(l10n.t("No more bookmarks"), 2000);
                 return;
             } else {
-
-                if ((direction === Directions.Backward && next.line < activeSelectionStartLine) ||
-                    (direction === Directions.Forward && next.line > activeSelectionStartLine)) {
+                if (
+                    (direction === Directions.Backward && next.line < activeSelectionStartLine)
+                    || (direction === Directions.Forward && next.line > activeSelectionStartLine)
+                ) {
                     window.setStatusBarMessage(l10n.t("No more bookmarks to shrink"), 2000);
                 } else {
                     shrinkSelectionToPosition(window.activeTextEditor, next, direction);

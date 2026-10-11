@@ -3,11 +3,11 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { commands, l10n, Uri, window, workspace } from "vscode";
+import { Uri, commands, l10n, window, workspace } from "vscode";
 import { Container } from "../core/container";
 import { Controller } from "../core/controller";
-import { getRelativePath, uriExists, uriWith } from "../utils/fs";
 import { getLinePreview } from "../core/operations";
+import { getRelativePath, uriExists, uriWith } from "../utils/fs";
 
 interface BookmarkExportItem {
     file: string;
@@ -48,12 +48,12 @@ async function collectBookmarks(controllers: Controller[]): Promise<BookmarkExpo
             }
 
             // Skip if file doesn't exist
-            if (! await uriExists(uriDocBookmark)) {
+            if (!await uriExists(uriDocBookmark)) {
                 continue;
             }
 
             // Sort bookmarks by line number
-            const sortedBookmarks = [...file.bookmarks].sort((a, b) => a.line - b.line);
+            const sortedBookmarks = [ ...file.bookmarks ].sort((a, b) => a.line - b.line);
 
             for (const bookmark of sortedBookmarks) {
                 let content = "";
@@ -63,7 +63,7 @@ async function collectBookmarks(controllers: Controller[]): Promise<BookmarkExpo
                     // If we can't get the line preview, use empty string
                     content = "";
                 }
-                
+
                 // Get relative path for display
                 let displayPath = file.path;
                 if (controller.workspaceFolder) {
@@ -101,7 +101,7 @@ function formatBookmarks(bookmarks: BookmarkExportItem[], pattern: string): stri
 
     // Check if using default table format by looking for the complete table pattern
     const isDefaultTableFormat = pattern.trim().startsWith("|") && pattern.trim().endsWith("|");
-    
+
     if (isDefaultTableFormat) {
         // Add table header
         lines.push("| File | Line | Column | Label | Content |");
@@ -111,20 +111,20 @@ function formatBookmarks(bookmarks: BookmarkExportItem[], pattern: string): stri
     // Create a replacement map for efficient substitution
     for (const bookmark of bookmarks) {
         const replacements: { [key: string]: string } = {
-            "$file": isDefaultTableFormat ? escapeForMarkdown(bookmark.file) : bookmark.file,
-            "$line": bookmark.line.toString(),
-            "$column": bookmark.column.toString(),
-            "$label": isDefaultTableFormat ? escapeForMarkdown(bookmark.label) : bookmark.label,
-            "$content": isDefaultTableFormat ? escapeForMarkdown(bookmark.content) : bookmark.content
+            $file: isDefaultTableFormat ? escapeForMarkdown(bookmark.file) : bookmark.file,
+            $line: bookmark.line.toString(),
+            $column: bookmark.column.toString(),
+            $label: isDefaultTableFormat ? escapeForMarkdown(bookmark.label) : bookmark.label,
+            $content: isDefaultTableFormat ? escapeForMarkdown(bookmark.content) : bookmark.content
         };
 
         let line = pattern;
-        for (const [key, value] of Object.entries(replacements)) {
+        for (const [ key, value ] of Object.entries(replacements)) {
             // Escape special regex characters in the key
             const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             line = line.replace(new RegExp(escapedKey, "g"), value);
         }
-        
+
         lines.push(line);
     }
 
@@ -136,7 +136,7 @@ export function registerExport(getControllers: () => Controller[]) {
         try {
             const controllers = getControllers();
             const bookmarks = await collectBookmarks(controllers);
-            
+
             if (bookmarks.length === 0) {
                 window.showInformationMessage(l10n.t("No bookmarks to export."));
                 return;

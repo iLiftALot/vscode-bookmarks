@@ -53,7 +53,7 @@
     "bookmarks.configuration.backgroundLineColor.deprecation": "Verwenden Sie `bookmarks.lineBackground` in `workbench.colorCustomizations` stattdessen",
     "bookmarks.configuration.navigateThroughAllFiles.description": "Erlaubt die Navigation nach Lesezeichen in allen Dateien des Projekts, anstatt nur in der aktuellen",
     "bookmarks.configuration.wrapNavigation.description": "Erlaubt die Navigation, die um an der ersten und letzten Lesezeichen in Scope (aktuelle Datei oder alle Dateien) wrappt",
-    "bookmarks.configuration.useWorkaroundForFormatters.description": "Verwenden Sie einen Workaround für Formatter wie Prettier, die keine Dokumentänderungen melden und das Sticky-Verhalten der Lesezeichen stören",    
+    "bookmarks.configuration.useWorkaroundForFormatters.description": "Verwenden Sie einen Workaround für Formatter wie Prettier, die keine Dokumentänderungen melden und das Sticky-Verhalten der Lesezeichen stören",
     "bookmarks.configuration.experimental.enableNewStickyEngine.description": "Experimentell. Aktiviert die neue Sticky-Engine mit Unterstützung für Formatter, verbesserten Erkennungen von Quellcodeänderungen und Rückgängig-Operationen",
     "bookmarks.configuration.keepBookmarksOnLineDelete.description": "Gibt an, ob Lesezeichen auf gelöschten Zeilen im File behalten werden sollen, wobei sie auf die nächste Zeile verschoben werden, anstatt mit der Zeile gelöscht zu werden, in der sie aktiviert wurden.",
     "bookmarks.configuration.showNoMoreBookmarksWarning.description": "Gibt an, ob eine Benachrichtigung angezeigt wird, wenn versucht wird, zwischen Lesezeichen zu navigieren, wenn keine mehr existieren.",

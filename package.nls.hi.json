@@ -108,4 +108,4 @@
     "bookmarks.walkthroughs.workingWithRemotes.description": "यह एक्सटेंशन रिमोट डेवलपमेंट के साथ काम करता है जैसे WSL, कंटेनर, SSH और कोडस्पेस।",
     "bookmarks.walkthroughs.customizingAppearance.title": "रूप-रंग अनुकूलित करें",
     "bookmarks.walkthroughs.customizingAppearance.description": "बुकमार्क्स के आइकन, लाइन और ओवरव्यू रूलर को अनुकूलित करें।\n[सेटिंग्स खोलें - गटर आइकन](command:workbench.action.openSettings?%5B%22bookmarks.gutterIcon%22%5D)\n[सेटिंग्स खोलें - लाइन](command:workbench.action.openSettingsJson?%5B%22workbench.colorCustomizations%22%5D)"
-  }
+}

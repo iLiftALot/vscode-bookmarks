@@ -4,58 +4,57 @@
  *  Licensed under the GPLv3 License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//@ts-check
+// @ts-check
 
-'use strict';
+"use strict";
 
-const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
-const webpack = require('webpack');
-
-
+const path = require("path");
+const TerserPlugin = require("terser-webpack-plugin");
 
 /**@type {import('webpack').Configuration}*/
 const config = {
     entry: "./src/extension.ts",
     optimization: {
-        minimizer: [new TerserPlugin({
-            parallel: true,
-            terserOptions: {
-                ecma: 2019,
-                keep_classnames: false,
-                mangle: true,
-                module: true
-            }
-        })],
+        minimizer: [
+            new TerserPlugin({
+                parallel: true,
+                terserOptions: {
+                    ecma: 2019,
+                    keep_classnames: false,
+                    mangle: true,
+                    module: true
+                }
+            })
+        ]
     },
-    
-    devtool: 'source-map',
+
+    devtool: "source-map",
     externals: {
         vscode: "commonjs vscode" // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
     },
     resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-        extensions: ['.ts', '.js']
+        extensions: [ ".ts", ".js" ]
     },
     module: {
-        rules: [{
+        rules: [ {
             test: /\.ts$/,
             exclude: /node_modules/,
-            use: [{
-                loader: 'ts-loader',
-            }]
-        }]
-    },
+            use: [ {
+                loader: "ts-loader"
+            } ]
+        } ]
+    }
 };
 
 const nodeConfig = {
     ...config,
     target: "node",
     output: { // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'extension-node.js',
+        path: path.resolve(__dirname, "dist"),
+        filename: "extension-node.js",
         libraryTarget: "commonjs2",
-        devtoolModuleFilenameTemplate: "../[resource-path]",
-    },
-}
+        devtoolModuleFilenameTemplate: "../[resource-path]"
+    }
+};
 
-module.exports = [nodeConfig];
+module.exports = [ nodeConfig ];

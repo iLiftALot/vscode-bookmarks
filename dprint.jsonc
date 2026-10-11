@@ -1,0 +1,5 @@
+{
+    "extends": "../../../.config/dprint/base.jsonc",
+    "includes": ["*.{json,jsonc}", "{src,vscode-whats-new,l10n}/**/*", "*.js", ".vscode"],
+    "excludes": []
+}

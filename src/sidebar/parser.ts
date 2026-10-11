@@ -4,17 +4,21 @@
 *--------------------------------------------------------------------------------------------*/
 
 export interface Point {
-    line: number,
-    column: number
+    line: number;
+    column: number;
 }
 
-export function parsePosition(position: string): Point | undefined {
+export function parsePosition(position: string | undefined): Point | undefined {
+    if (position === undefined) {
+        return undefined;
+    }
+
     const re = new RegExp(/\(Ln\s(\d+),\sCol\s(\d+)\)/);
     const matches = re.exec(position);
     if (matches) {
         return {
-            line: parseInt(matches[ 1 ], 10),
-            column: parseInt(matches[ 2 ], 10)
+            line: parseInt(matches[1], 10),
+            column: parseInt(matches[2], 10)
         };
     }
     return undefined;

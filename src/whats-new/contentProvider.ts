@@ -3,30 +3,42 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { ChangeLogItem, ChangeLogKind, ContentProvider, Header, Image, IssueKind, SupportChannel, SocialMediaProvider } from "../../vscode-whats-new/src/ContentProvider";
+import {
+    ChangeLogItem,
+    ChangeLogKind,
+    ContentProvider,
+    Header,
+    Image,
+    IssueKind,
+    SocialMediaProvider,
+    SupportChannel
+} from "../../vscode-whats-new/src/ContentProvider";
 
 export class BookmarksContentProvider implements ContentProvider {
-
     public provideHeader(logoUrl: string): Header {
-        return <Header>{
-            logo: <Image>{ src: logoUrl, height: 50, width: 50 },
+        return <Header> {
+            logo: <Image> { src: logoUrl, height: 50, width: 50 },
             message: `<b>Bookmarks</b> helps you to navigate in your code, <b>moving</b> 
             between important positions easily and quickly. No more need 
             to <i>search for code</i>. It also supports a set of <b>selection</b>
             commands, which allows you to select bookmarked lines and regions between
-            lines.`};
+            lines.`
+        };
     }
 
     public provideChangeLog(): ChangeLogItem[] {
         const changeLog: ChangeLogItem[] = [];
 
-        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "14.1.1", releaseDate: "March 2026 - Recovery 1" } });
+        changeLog.push({
+            kind: ChangeLogKind.VERSION,
+            detail: { releaseNumber: "14.1.1", releaseDate: "March 2026 - Recovery 1" }
+        });
         changeLog.push({
             kind: ChangeLogKind.FIXED,
             detail: {
                 message: "Fix kudos attribution in v14.1.0 release notes",
                 id: 882,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
 
@@ -36,7 +48,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Ability to export bookmarks",
                 id: 172,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -44,7 +56,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Add bookmarks via Side Bar (+ button/icon)",
                 id: 319,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -61,7 +73,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Add Search button to the Side Bar",
                 id: 558,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -69,7 +81,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "New setting to confirm before clearing bookmarks",
                 id: 755,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -77,7 +89,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Use current label as a starting point when editing labels",
                 id: 812,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -94,7 +106,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Replace hardcoded icons with product icons",
                 id: 719,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -102,7 +114,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Verify existing bookmarks.json when enabling Save Bookmarks In Project",
                 id: 690,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -119,7 +131,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Add basic test support",
                 id: 828,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -127,7 +139,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Add CONTRIBUTING documentation",
                 id: 833,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -135,7 +147,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Update vscode-whats-new submodule to March 2026 release",
                 id: 867,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -143,7 +155,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Bump Node.js dependency to v22",
                 id: 869,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -174,13 +186,16 @@ export class BookmarksContentProvider implements ContentProvider {
             }
         });
 
-        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "14.0.0", releaseDate: "November 2025" } });
+        changeLog.push({
+            kind: ChangeLogKind.VERSION,
+            detail: { releaseNumber: "14.0.0", releaseDate: "November 2025" }
+        });
         changeLog.push({
             kind: ChangeLogKind.NEW,
             detail: {
                 message: "Fully Open Source again",
                 id: 523,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -188,7 +203,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Update Side Bar: Count Badge description",
                 id: 739,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -196,7 +211,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Reuse opened file",
                 id: 775,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -204,7 +219,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "New setting to hide Welcome view",
                 id: 792,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -212,7 +227,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "New setting to specify the Bookmark's overview ruler lane",
                 id: 357,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -274,7 +289,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Clear command not updating context menu",
                 id: 758,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -282,7 +297,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Side Bar: Count Badge tooltip error",
                 id: 809,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -290,7 +305,7 @@ export class BookmarksContentProvider implements ContentProvider {
             detail: {
                 message: "Incorrect command in documentation",
                 id: 797,
-                kind: IssueKind.Issue,
+                kind: IssueKind.Issue
             }
         });
         changeLog.push({
@@ -358,7 +373,10 @@ export class BookmarksContentProvider implements ContentProvider {
             }
         });
 
-        changeLog.push({ kind: ChangeLogKind.VERSION, detail: { releaseNumber: "13.4.2", releaseDate: "September 2023" } });
+        changeLog.push({
+            kind: ChangeLogKind.VERSION,
+            detail: { releaseNumber: "13.4.2", releaseDate: "September 2023" }
+        });
         changeLog.push({
             kind: ChangeLogKind.NEW,
             detail: {
@@ -498,7 +516,8 @@ export class BookmarksContentProvider implements ContentProvider {
         });
         supportChannels.push({
             title: "Donate via PayPal",
-            link: "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=EP57F3B6FXKTU&lc=US&item_name=Alessandro%20Fragnani&item_number=vscode%20extensions&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted",
+            link:
+                "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=EP57F3B6FXKTU&lc=US&item_name=Alessandro%20Fragnani&item_number=vscode%20extensions&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted",
             message: "Donate via PayPal"
         });
         return supportChannels;
@@ -507,9 +526,9 @@ export class BookmarksContentProvider implements ContentProvider {
 
 export class BookmarksSocialMediaProvider implements SocialMediaProvider {
     public provideSocialMedias() {
-        return [{
+        return [ {
             title: "Follow me on Twitter",
             link: "https://www.twitter.com/alefragnani"
-        }];
+        } ];
     }
 }

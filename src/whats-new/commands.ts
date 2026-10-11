@@ -4,9 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { commands } from "vscode";
-import { Container } from "../core/container";
 import { WhatsNewManager } from "../../vscode-whats-new/src/Manager";
-import { BookmarksSocialMediaProvider, BookmarksContentProvider } from "./contentProvider";
+import { Container } from "../core/container";
+import { BookmarksContentProvider, BookmarksSocialMediaProvider } from "./contentProvider";
 
 export async function registerWhatsNew() {
     const provider = new BookmarksContentProvider();
@@ -15,5 +15,7 @@ export async function registerWhatsNew() {
         .registerSocialMediaProvider(new BookmarksSocialMediaProvider());
     await viewer.showPageInActivation();
     Container.context.subscriptions.push(commands.registerCommand("bookmarks.whatsNew", () => viewer.showPage()));
-    Container.context.subscriptions.push(commands.registerCommand("_bookmarks.whatsNewContextMenu", () => viewer.showPage()));
+    Container.context.subscriptions.push(
+        commands.registerCommand("_bookmarks.whatsNewContextMenu", () => viewer.showPage())
+    );
 }

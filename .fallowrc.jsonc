@@ -13,5 +13,6 @@
                 "unresolved-imports": "off"
             }
         }
-    ]
+    ],
+    "typeAware": { "enabled": true, "projects": [], "require": "best-effort" }
 }

@@ -2,7 +2,7 @@
 *  Copyright (c) Castellant Guillaume & Alessandro Fragnani. All rights reserved.
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *
-*  Original Author: Castellant Guillaume (@Terminux), 
+*  Original Author: Castellant Guillaume (@Terminux),
 *                   (https://github.com/alefragnani/vscode-bookmarks/pull/20)
 *--------------------------------------------------------------------------------------------*/
 
@@ -12,11 +12,13 @@ import { File } from "../core/file";
 import { indexOfBookmark } from "../core/operations";
 
 export class Sticky {
-
-    public static stickyBookmarks(event: vscode.TextDocumentChangeEvent,
-        activeEditorCountLine: number, activeBookmark: File,
-        activeEditor: vscode.TextEditor, controller: Controller): boolean {
-
+    public static stickyBookmarks(
+        event: vscode.TextDocumentChangeEvent,
+        activeEditorCountLine: number,
+        activeBookmark: File,
+        activeEditor: vscode.TextEditor,
+        controller: Controller
+    ): boolean {
         let diffLine: number;
         let updatedBookmark = false;
 
@@ -31,20 +33,25 @@ export class Sticky {
                     diffLine = 0 - diffLine;
 
                     // one line up
-                    if (event.contentChanges[ 0 ].range.end.line - event.contentChanges[ 0 ].range.start.line === 1) {
-
-                        if ((event.contentChanges[ 0 ].range.end.character === 0) &&
-                            (event.contentChanges[ 0 ].range.start.character === 0)) {
+                    if (event.contentChanges[0].range.end.line - event.contentChanges[0].range.start.line === 1) {
+                        if (
+                            (event.contentChanges[0].range.end.character === 0)
+                            && (event.contentChanges[0].range.start.character === 0)
+                        ) {
                             // the bookmarked one
-                            const idxbk = indexOfBookmark(activeBookmark, event.contentChanges[ 0 ].range.start.line); // bookmarks.indexOf({line: event.contentChanges[ 0 ].range.start.line});
+                            const idxbk = indexOfBookmark(activeBookmark, event.contentChanges[0].range.start.line); // bookmarks.indexOf({line: event.contentChanges[ 0 ].range.start.line});
                             if (idxbk > -1) {
-                                controller.removeBookmark(idxbk, event.contentChanges[ 0 ].range.start.line);
+                                controller.removeBookmark(idxbk, event.contentChanges[0].range.start.line);
                             }
                         }
                     }
 
-                    if (event.contentChanges[ 0 ].range.end.line - event.contentChanges[ 0 ].range.start.line > 1) {
-                        for (let i = event.contentChanges[ 0 ].range.start.line/* + 1*/; i <= event.contentChanges[ 0 ].range.end.line; i++) {
+                    if (event.contentChanges[0].range.end.line - event.contentChanges[0].range.start.line > 1) {
+                        for (
+                            let i = event.contentChanges[0].range.start.line /* + 1*/;
+                            i <= event.contentChanges[0].range.end.line;
+                            i++
+                        ) {
                             const index = indexOfBookmark(activeBookmark, i); // bookmarks.indexOf({line: i});
 
                             if (index > -1) {
@@ -56,8 +63,8 @@ export class Sticky {
                 }
 
                 for (let index = 0; index < activeBookmark.bookmarks.length; index++) {
-                    const eventLine: number = event.contentChanges[ 0 ].range.start.line;
-                    let eventcharacter: number = event.contentChanges[ 0 ].range.start.character;
+                    const eventLine: number = event.contentChanges[0].range.start.line;
+                    let eventcharacter: number = event.contentChanges[0].range.start.character;
 
                     // indent ?
                     if (eventcharacter > 0) {
@@ -70,22 +77,22 @@ export class Sticky {
 
                     // also =
                     if (
-                        ((activeBookmark.bookmarks[ index ].line > eventLine) && (eventcharacter > 0)) ||
-                        ((activeBookmark.bookmarks[ index ].line >= eventLine) && (eventcharacter === 0))
+                        ((activeBookmark.bookmarks[index].line > eventLine) && (eventcharacter > 0))
+                        || ((activeBookmark.bookmarks[index].line >= eventLine) && (eventcharacter === 0))
                     ) {
-                        let newLine = activeBookmark.bookmarks[ index ].line + diffLine;
+                        let newLine = activeBookmark.bookmarks[index].line + diffLine;
                         if (newLine < 0) {
                             newLine = 0;
                         }
 
-                        controller.updateBookmark(index, activeBookmark.bookmarks[ index ].line, newLine);
+                        controller.updateBookmark(index, activeBookmark.bookmarks[index].line, newLine);
                         updatedBookmark = true;
                     }
                 }
             }
 
             // paste case
-            if (!updatedBookmark && (event.contentChanges[ 0 ].text.length > 1)) {
+            if (!updatedBookmark && (event.contentChanges[0].text.length > 1)) {
                 const selection = vscode.window.activeTextEditor.selection;
                 const lineRange = [ selection.start.line, selection.end.line ];
                 let lineMin = Math.min.apply(this, lineRange);
@@ -95,7 +102,10 @@ export class Sticky {
                     lineMin++;
                 }
 
-                if (selection.end.character < vscode.window.activeTextEditor.document.lineAt(selection.end).range.end.character) {
+                if (
+                    selection.end.character
+                        < vscode.window.activeTextEditor.document.lineAt(selection.end).range.end.character
+                ) {
                     lineMax--;
                 }
 
@@ -111,14 +121,16 @@ export class Sticky {
             }
         } else {
             // Remove ident changes. Empty text decrease and only spaces increase
-            const moveChanges = event.contentChanges.filter(c => !(c.range.start.line === c.range.end.line && /^[\t ]*$/.test(c.text)));
+            const moveChanges = event.contentChanges.filter((c) =>
+                !(c.range.start.line === c.range.end.line && /^[\t ]*$/.test(c.text))
+            );
 
             if (moveChanges.length === 2) {
                 // move line up and move line down case
                 if (activeEditor.selections.length === 1) {
-                    if (moveChanges[ 0 ].text === "") {
+                    if (moveChanges[0].text === "") {
                         updatedBookmark = this.moveStickyBookmarks("down", activeBookmark, activeEditor, controller);
-                    } else if (moveChanges[ 1 ].text === "") {
+                    } else if (moveChanges[1].text === "") {
                         updatedBookmark = this.moveStickyBookmarks("up", activeBookmark, activeEditor, controller);
                     }
                 }
@@ -128,7 +140,12 @@ export class Sticky {
         return updatedBookmark;
     }
 
-    public static moveStickyBookmarks(direction: string, activeBookmark: File, activeEditor: vscode.TextEditor, controller: Controller): boolean {
+    public static moveStickyBookmarks(
+        direction: string,
+        activeBookmark: File,
+        activeEditor: vscode.TextEditor,
+        controller: Controller
+    ): boolean {
         let diffChange = -1;
         let updatedBookmark = false;
         let diffLine;
@@ -175,10 +192,9 @@ export class Sticky {
         }
 
         for (const i in lineRange) {
-            const index = indexOfBookmark(activeBookmark, lineRange[ i ]);
+            const index = indexOfBookmark(activeBookmark, lineRange[i]);
             if (index > -1) {
-                controller.updateBookmark(index, lineRange[ i ],
-                    activeBookmark.bookmarks[ index ].line - diffLine);
+                controller.updateBookmark(index, lineRange[i], activeBookmark.bookmarks[index].line - diffLine);
                 updatedBookmark = true;
             }
         }
@@ -192,7 +208,6 @@ export class Sticky {
     }
 
     private static HadOnlyOneValidContentChange(event): boolean {
-
         // not valid
         if ((event.contentChanges.length > 2) || (event.contentChanges.length === 0)) {
             return false;
@@ -203,20 +218,26 @@ export class Sticky {
             return true;
         } else { // has 2, but is it a trimAutoWhitespace issue?
             if (event.contentChanges.length === 2) {
-                const trimAutoWhitespace: boolean = vscode.workspace.getConfiguration("editor", null).get("trimAutoWhitespace", true);
+                const trimAutoWhitespace: boolean = vscode.workspace.getConfiguration("editor", null).get(
+                    "trimAutoWhitespace",
+                    true
+                );
                 if (!trimAutoWhitespace) {
                     return false;
                 }
 
                 // check if the first range is 'equal' and if the second is 'empty'
-                const fistRangeEquals: boolean =
-                    (event.contentChanges[ 0 ].range.start.character === event.contentChanges[ 0 ].range.end.character) &&
-                    (event.contentChanges[ 0 ].range.start.line === event.contentChanges[ 0 ].range.end.line);
+                const fistRangeEquals: boolean = (event
+                    .contentChanges[0]
+                    .range
+                    .start
+                    .character === event.contentChanges[0].range.end.character)
+                    && (event.contentChanges[0].range.start.line === event.contentChanges[0].range.end.line);
 
-                const secondRangeEmpty: boolean = (event.contentChanges[ 1 ].text === "") &&
-                    (event.contentChanges[ 1 ].range.start.line === event.contentChanges[ 1 ].range.end.line) &&
-                    (event.contentChanges[ 1 ].range.start.character === 0) &&
-                    (event.contentChanges[ 1 ].range.end.character > 0);
+                const secondRangeEmpty: boolean = (event.contentChanges[1].text === "")
+                    && (event.contentChanges[1].range.start.line === event.contentChanges[1].range.end.line)
+                    && (event.contentChanges[1].range.start.character === 0)
+                    && (event.contentChanges[1].range.end.character > 0);
 
                 return fistRangeEquals && secondRangeEmpty;
             }

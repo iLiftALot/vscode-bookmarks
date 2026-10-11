@@ -14,9 +14,9 @@ export function getRevealLocationConfig(ifOutsideViewport: boolean): TextEditorR
     const configuration = workspace.getConfiguration("bookmarks");
     const revealLocation = configuration.get<RevealLocation>("revealLocation", RevealLocation.Center);
 
-    return revealLocation === RevealLocation.Top ?
-        TextEditorRevealType.AtTop :
-        ifOutsideViewport ?
-            TextEditorRevealType.InCenterIfOutsideViewport :
-            TextEditorRevealType.InCenter;
+    return revealLocation === RevealLocation.Top
+        ? TextEditorRevealType.AtTop
+        : ifOutsideViewport
+        ? TextEditorRevealType.InCenterIfOutsideViewport
+        : TextEditorRevealType.InCenter;
 }

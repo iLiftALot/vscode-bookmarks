@@ -4,25 +4,37 @@
 *---------------------------------------------------------------------------------------------*/
 
 import { commands } from "vscode";
-import { EditorLineNumberContextParams } from "./editorLineNumberContext";
 import { Container } from "../core/container";
+import { EditorLineNumberContextParams } from "./editorLineNumberContext";
 
-export function registerGutterCommands(toggleCommand: (params: EditorLineNumberContextParams) => void, toggleLabeledCommand: (params: EditorLineNumberContextParams) => void) {
+export function registerGutterCommands(
+    toggleCommand: (params: EditorLineNumberContextParams) => void,
+    toggleLabeledCommand: (params: EditorLineNumberContextParams) => void
+) {
     Container.context.subscriptions.push(
-        commands.registerCommand("_bookmarks.addBookmarkAtLine#gutter",
+        commands.registerCommand(
+            "_bookmarks.addBookmarkAtLine#gutter",
             async (params: EditorLineNumberContextParams) => {
                 await toggleCommand(params);
-            }));
+            }
+        )
+    );
 
     Container.context.subscriptions.push(
-        commands.registerCommand("_bookmarks.addLabeledBookmarkAtLine#gutter",
+        commands.registerCommand(
+            "_bookmarks.addLabeledBookmarkAtLine#gutter",
             async (params: EditorLineNumberContextParams) => {
                 await toggleLabeledCommand(params);
-            }));
+            }
+        )
+    );
 
     Container.context.subscriptions.push(
-        commands.registerCommand("_bookmarks.removeBookmarkAtLine#gutter",
+        commands.registerCommand(
+            "_bookmarks.removeBookmarkAtLine#gutter",
             async (params: EditorLineNumberContextParams) => {
                 await toggleCommand(params);
-            }));
+            }
+        )
+    );
 }

@@ -3,22 +3,24 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { Position, Uri, workspace, WorkspaceFolder } from "vscode";
+import { Position, Uri, WorkspaceFolder, workspace } from "vscode";
 import { codicons } from "vscode-ext-codicons";
+import { uriExists, uriWith } from "../utils/fs";
 import { Bookmark, BookmarkQuickPickItem } from "./bookmark";
 import { Directions, NO_BOOKMARKS, NO_BOOKMARKS_AFTER, NO_BOOKMARKS_BEFORE, NO_MORE_BOOKMARKS } from "./constants";
 import { File } from "./file";
-import { uriExists, uriWith } from "../utils/fs";
 
 export function nextBookmark(file: File, currentPosition: Position, direction: Directions): Promise<number | Position> {
     return new Promise((resolve, reject) => {
-
         if (typeof file.bookmarks === "undefined") {
             reject('typeof file.bookmarks == "undefined"');
             return;
         }
 
-        const navigateThroughAllFiles: boolean = workspace.getConfiguration("bookmarks").get("navigateThroughAllFiles", true);
+        const navigateThroughAllFiles: boolean = workspace.getConfiguration("bookmarks").get(
+            "navigateThroughAllFiles",
+            true
+        );
 
         if (file.bookmarks.length === 0) {
             if (navigateThroughAllFiles) {
@@ -50,7 +52,7 @@ export function nextBookmark(file: File, currentPosition: Position, direction: D
                     resolve(NO_BOOKMARKS_AFTER);
                     return;
                 } else {
-                    resolve(new Position(file.bookmarks[ 0 ].line, file.bookmarks[ 0 ].column));
+                    resolve(new Position(file.bookmarks[0].line, file.bookmarks[0].column));
                     return;
                 }
             } else {
@@ -59,7 +61,7 @@ export function nextBookmark(file: File, currentPosition: Position, direction: D
             }
         } else { // JUMP_BACKWARD
             for (let index = file.bookmarks.length - 1; index >= 0; index--) {
-                const element = file.bookmarks[ index ];
+                const element = file.bookmarks[index];
                 if (element.line < currentPosition.line) {
                     nextBookmark = new Position(element.line, element.column); // .line
                     break;
@@ -73,7 +75,14 @@ export function nextBookmark(file: File, currentPosition: Position, direction: D
                     resolve(NO_BOOKMARKS_BEFORE);
                     return;
                 } else {
-                    resolve(new Position(file.bookmarks[ file.bookmarks.length - 1 ].line, file.bookmarks[ file.bookmarks.length - 1 ].column));
+                    resolve(
+                        new Position(
+                            file
+                                .bookmarks[file.bookmarks.length - 1]
+                                .line,
+                            file.bookmarks[file.bookmarks.length - 1].column
+                        )
+                    );
                     return;
                 }
             } else {
@@ -84,11 +93,12 @@ export function nextBookmark(file: File, currentPosition: Position, direction: D
     });
 }
 
-export function listBookmarks(file: File, workspaceFolder: WorkspaceFolder) {
-
+export function listBookmarks(
+    file: File,
+    workspaceFolder: WorkspaceFolder | undefined
+): Promise<BookmarkQuickPickItem[] | undefined> {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-
+    return new Promise<BookmarkQuickPickItem[] | undefined>(async (resolve) => {
         // no bookmark, returns empty
         if (file.bookmarks.length === 0) {
             resolve(undefined);
@@ -110,39 +120,35 @@ export function listBookmarks(file: File, workspaceFolder: WorkspaceFolder) {
         }
 
         // file does not exist, returns empty
-        if (! await uriExists(uriDocBookmark)) {
+        if (!await uriExists(uriDocBookmark)) {
             resolve(undefined);
             return;
         }
 
         // const uriDocBookmark: Uri = Uri.file(file.path);
-        workspace.openTextDocument(uriDocBookmark).then(doc => {
-
+        workspace.openTextDocument(uriDocBookmark).then((doc) => {
             const items: BookmarkQuickPickItem[] = [];
             const invalids = [];
             for (let index = 0; index < file.bookmarks.length; index++) {
-
-                const bookmarkLine = file.bookmarks[ index ].line + 1;
-                const bookmarkColumn = file.bookmarks[ index ].column + 1;
+                const bookmarkLine = file.bookmarks[index].line + 1;
+                const bookmarkColumn = file.bookmarks[index].column + 1;
 
                 // check for 'invalidated' bookmarks, when its outside the document length
                 if (bookmarkLine <= doc.lineCount) {
                     const lineText = doc.lineAt(bookmarkLine - 1).text.trim();
                     // const normalizedPath = doc.uri.fsPath;
 
-                    if (file.bookmarks[ index ].label === "") {
+                    if (file.bookmarks[index].label === "") {
                         items.push({
-                            description: "(Ln " + bookmarkLine.toString() + ", Col " +
-                                bookmarkColumn.toString() + ")",
+                            description: "(Ln " + bookmarkLine.toString() + ", Col " + bookmarkColumn.toString() + ")",
                             label: lineText,
                             detail: file.path,
                             uri: uriDocBookmark
                         });
                     } else {
                         items.push({
-                            description: "(Ln " + bookmarkLine.toString() + ", Col " +
-                                bookmarkColumn.toString() + ")",
-                            label: codicons.tag + " " + file.bookmarks[ index ].label,
+                            description: "(Ln " + bookmarkLine.toString() + ", Col " + bookmarkColumn.toString() + ")",
+                            label: codicons.tag + " " + file.bookmarks[index].label,
                             detail: file.path,
                             uri: uriDocBookmark
                         });
@@ -154,7 +160,7 @@ export function listBookmarks(file: File, workspaceFolder: WorkspaceFolder) {
             if (invalids.length > 0) {
                 let idxInvalid: number;
                 for (let indexI = 0; indexI < invalids.length; indexI++) {
-                    idxInvalid = file.bookmarks.indexOf(<Bookmark>{ line: invalids[ indexI ] - 1 });
+                    idxInvalid = file.bookmarks.indexOf(<Bookmark> { line: invalids[indexI] - 1 });
                     file.bookmarks.splice(idxInvalid, 1);
                 }
             }
@@ -171,7 +177,7 @@ export function clear(file: File): void {
 
 export function indexOfBookmark(file: File, line: number): number {
     for (let index = 0; index < file.bookmarks.length; index++) {
-        const element = file.bookmarks[ index ];
+        const element = file.bookmarks[index];
         if (element.line === line) {
             return index;
         }

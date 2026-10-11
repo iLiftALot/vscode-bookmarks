@@ -5,12 +5,12 @@
 
 import os = require("os");
 import path = require("path");
-import { Uri, workspace, WorkspaceFolder } from "vscode";
+import { Uri, WorkspaceFolder, workspace } from "vscode";
 import { Bookmark } from "../core/bookmark";
 import { UNTITLED_SCHEME } from "../core/constants";
 import { File } from "../core/file";
 
-export function getRelativePath(folder: string, filePath: string) {
+export function getRelativePath(folder: string | undefined, filePath: string): string {
     if (!folder) {
         return filePath;
     }
@@ -39,7 +39,7 @@ export function uriJoin(uri: Uri, ...paths: string[]): string {
 }
 
 export function uriWith(uri: Uri, prefix: string, filePath: string): Uri {
-    const newPrefix = prefix === "/" 
+    const newPrefix = prefix === "/"
         ? ""
         : prefix;
 
@@ -49,7 +49,6 @@ export function uriWith(uri: Uri, prefix: string, filePath: string): Uri {
 }
 
 export async function uriExists(uri: Uri): Promise<boolean> {
-    
     if (uri.scheme === UNTITLED_SCHEME) {
         return true;
     }
@@ -81,17 +80,17 @@ export async function createDirectory(dir: string): Promise<void> {
 
 export async function readFile(filePath: string): Promise<string> {
     const bytes = await workspace.fs.readFile(Uri.parse(filePath));
-    return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    return JSON.parse(new TextDecoder("utf-8").decode(bytes));
 }
 
 export async function readFileUri(uri: Uri): Promise<string> {
     const bytes = await workspace.fs.readFile(uri);
-    return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+    return JSON.parse(new TextDecoder("utf-8").decode(bytes));
 }
 
 export async function readRAWFileUri(uri: Uri): Promise<string> {
     const bytes = await workspace.fs.readFile(uri);
-    return new TextDecoder('utf-8').decode(bytes);
+    return new TextDecoder("utf-8").decode(bytes);
 }
 
 export async function writeFile(filePath: string, contents: string): Promise<void> {
@@ -105,7 +104,7 @@ export async function writeFileUri(uri: Uri, contents: string): Promise<void> {
 }
 
 export async function deleteFileUri(uri: Uri): Promise<void> {
-    await workspace.fs.delete(uri, { recursive: false, useTrash: false});
+    await workspace.fs.delete(uri, { recursive: false, useTrash: false });
 }
 
 export function parsePosition(position: string): Bookmark | undefined {
@@ -113,14 +112,14 @@ export function parsePosition(position: string): Bookmark | undefined {
     const matches = re.exec(position);
     if (matches) {
         return {
-            line: parseInt(matches[ 1 ], 10),
-            column: parseInt(matches[ 2 ], 10)
+            line: parseInt(matches[1], 10),
+            column: parseInt(matches[2], 10)
         };
     }
     return undefined;
 }
 
-export function getFileUri(file: File, workspaceFolder: WorkspaceFolder): Uri {
+export function getFileUri(file: File, workspaceFolder: WorkspaceFolder | undefined): Uri {
     if (file.uri) {
         return file.uri;
     }

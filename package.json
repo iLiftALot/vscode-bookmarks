@@ -872,20 +872,27 @@
             "vscode-ext"
         ],
         "rules": {
-            "indent": [
-                "error",
-                4,
-                {
-                    "SwitchCase": 1
-                }
-            ],
+            "indent": "off",
             "no-tabs": "error",
             "semi": [
                 "error",
                 "always"
             ],
             "no-unexpected-multiline": "error"
-        }
+        },
+        "overrides": [
+            {
+                "files": [
+                    "webpack.config.js"
+                ],
+                "env": {
+                    "node": true
+                },
+                "rules": {
+                    "@typescript-eslint/no-var-requires": "off"
+                }
+            }
+        ]
     },
     "scripts": {
         "build": "webpack --mode development",
@@ -894,7 +901,10 @@
         "webpack": "webpack --mode development",
         "webpack-dev": "webpack --mode development --watch",
         "compile": "tsc -p ./",
-        "lint": "eslint -c package.json --ext .ts src vscode-whats-new",
+        "fmt": "zsh scripts/fmt.sh",
+        "fmt:check": "zsh scripts/fmt.sh check",
+        "fmt:output": "zsh scripts/fmt.sh file-paths",
+        "lint": "eslint -c package.json --ext .ts src vscode-whats-new webpack.config.js",
         "pretest": "npm run compile && npm run lint",
         "test-compile": "tsc -p ./ && npm run webpack",
         "just-test": "node ./out/src/test/runTest.js",
@@ -908,6 +918,8 @@
         "vscode-ext-selection": "1.0.0"
     },
     "devDependencies": {
+        "@fallow-cli/beacon": "^0.6.6",
+        "@fallow-cli/fallow-cov": "^0.4.1",
         "@types/glob": "^8.1.0",
         "@types/mocha": "^10.0.0",
         "@types/node": "^22.18.10",
@@ -917,6 +929,7 @@
         "@vscode/test-electron": "3.1.0",
         "eslint": "^8.1.0",
         "eslint-config-vscode-ext": "^1.1.0",
+        "fallow-type-aware": "^3.31.0",
         "glob": "^8.1.0",
         "mocha": "^11.1.0",
         "terser-webpack-plugin": "^5.2.4",
@@ -924,5 +937,9 @@
         "typescript": "^5.3.3",
         "webpack": "^5.105.2",
         "webpack-cli": "^4.8.0"
+    },
+    "allowScripts": {
+        "fsevents@2.3.2": true,
+        "@fallow-cli/fallow-cov@0.4.1": true
     }
 }

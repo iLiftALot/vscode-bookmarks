@@ -25,7 +25,7 @@ export const NO_MORE_BOOKMARKS = -2;
 export const NO_BOOKMARKS_BEFORE = -3;
 export const NO_BOOKMARKS_AFTER = -4;
 
-export const WORKSPACE_ROOTPATH  = "$ROOTPATH$";
+export const WORKSPACE_ROOTPATH = "$ROOTPATH$";
 
 export const DEFAULT_GUTTER_ICON_FILL_COLOR = "#157EFB";
 export const DEFAULT_GUTTER_ICON_BORDER_COLOR = "#157EFB";
